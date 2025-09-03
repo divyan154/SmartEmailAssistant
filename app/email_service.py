@@ -1,12 +1,19 @@
-import imaplib, email
+import imaplib, email,os
 from email.header import decode_header
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
+
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASS = os.getenv("EMAIL_PASS")
+IMAP_SERVER = os.getenv("IMAP_SERVER", "imap.gmail.com")
 
 SUPPORT_KEYWORDS = ["support", "query", "request", "help"]
 
-def fetch_emails(username, password, imap_url="imap.gmail.com", mailbox="inbox", limit=20):
-    mail = imaplib.IMAP4_SSL(imap_url)
-    mail.login(username, password)
+def fetch_emails(limit,mailbox="inbox"):
+    mail = imaplib.IMAP4_SSL(IMAP_SERVER)
+    mail.login(EMAIL_USER,EMAIL_PASS)
     mail.select(mailbox)
 
     _, messages = mail.search(None, "ALL")
