@@ -1,4 +1,4 @@
-import imaplib, email,os
+import imaplib, email, os
 from email.header import decode_header
 from datetime import datetime
 from dotenv import load_dotenv
@@ -11,15 +11,15 @@ IMAP_SERVER = os.getenv("IMAP_SERVER", "imap.gmail.com")
 
 SUPPORT_KEYWORDS = ["support", "query", "request", "help"]
 
-def fetch_emails(limit,mailbox="inbox"):
+
+def fetch_emails(limit, mailbox="inbox"):
     mail = imaplib.IMAP4_SSL(IMAP_SERVER)
-    mail.login(EMAIL_USER,EMAIL_PASS)
+    mail.login(EMAIL_USER, EMAIL_PASS)
     mail.select(mailbox)
 
     _, messages = mail.search(None, "ALL")
     messages = messages[0].split()
     latest_messages = messages[-limit:]
-
     emails = []
 
     for msg_num in latest_messages:
@@ -38,19 +38,22 @@ def fetch_emails(limit,mailbox="inbox"):
         if msg.is_multipart():
             for part in msg.walk():
                 if part.get_content_type() == "text/plain":
-                    body = part.get_payload(decode=True).decode("utf-8", errors="ignore")
+                    body = part.get_payload(decode=True).decode(
+                        "utf-8", errors="ignore"
+                    )
                     break
         else:
             body = msg.get_payload(decode=True).decode("utf-8", errors="ignore")
 
         # Filtering by keywords in subject
         if any(word.lower() in subject.lower() for word in SUPPORT_KEYWORDS):
-            emails.append({
-                "sender": from_,
-                "subject": subject,
-                "body": body,
-                "date_received": date_
-            })
-
+            emails.append(
+                {
+                    "sender": from_,
+                    "subject": subject,
+                    "body": body,
+                    "date_received": date_,
+                }
+            )
     mail.logout()
     return emails
