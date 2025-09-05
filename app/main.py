@@ -62,7 +62,7 @@ def fetch_and_store_emails(db: Session = Depends(get_db)):
         if existing:
             print(f"--> Skipped (duplicate found in DB) :: {existing.subject}")
             continue
-
+         
         # Parse date safely
         date_str = e.get("date_received")
         try:
